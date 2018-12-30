@@ -206,20 +206,39 @@ _# cd $GOPATH/src/github.com/hyperledger_
 
 _# git clone -b release-1.3 https://github.com/hyperledger/fabric-ca_
 
-_# cd fabirc-ca_
+_# cd fabric-ca_
 
-_# make fabirc-ca-server_
+_# make fabric-ca-server_
 
 _# make fabric-ca-client_
 
 
 - Fabric-ca 환경변수 설정(루트 가상 머신에서 실행)
 
-_# gedit /etc/profile
+_# gedit /etc/profile_
 
 '''
 export PATH=$PATH:$GOPATH/src/github.com/hyperledger/fabric-ca/bin
 '''
+
+_# source /etc/profile_
+
+
+- fabric-ca-server 명령어 실행 화면
+
+_# fabric-ca-server_
+
+![3-1.PNG]({{site.baseurl}}/3-1.PNG)
+
+
+
+- fabric-ca-client 명령어 실행 화면
+
+_# fabric-ca-client_
+
+![3-2.PNG]({{site.baseurl}}/3-2.PNG)
+
+
 
 
 
