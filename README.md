@@ -289,7 +289,7 @@ export FABRIC_CA_SERVER_CLIENT=/root/testnet/
 ```
 - 인증서 저장(admin@ordererorg0 노드에 실행)
 ```
-# fabric-ca-client getcacert -u http://10.0.1.100:7054 -M /root/testnet/crypto-config/peerOrganizations/ordererorg0/msp
+# fabric-ca-client getcacert -u http://10.0.1.100:7054 -M /root/testnet/crypto-config/ordererOrganizations/ordererorg0/msp
 ```
 
 - cryptogen 예제의 스크립트 재사용을 위해 인증서명 변경
@@ -305,7 +305,7 @@ export FABRIC_CA_SERVER_CLIENT=/root/testnet/
 
 - cacerts 인증서를 이름변경(admin@ordererorg0 노드에 실행) 
 ```
-# mv /root/testnet/crypto-config/peerOrganizations/ordererorg0/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/ordererorg0/msp/cacerts/ca.crt
+# mv /root/testnet/crypto-config/ordererOrganizations/ordererorg0/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/ordererOrganizations/ordererorg0/msp/cacerts/ca.crt
 ```
 
 - 조직 운영자 계정 생성을 위해 Fabric-CA 서버 운영자 노드의 fabric-ca-client-config.yaml(admin@ordererorg0 노드에 실행) 
@@ -433,14 +433,14 @@ id:
 
 - ordererorg0 조직 운영자 MSP 생성(admin@ordererorg0 노드에서 실행)
 ```
-# mkdir -p /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/
-# fabric-ca-client enroll -u http://Admin@ordererorg0:ordererorg0password@10.0.1.100:7054 -H /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/
+# mkdir -p /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/
+# fabric-ca-client enroll -u http://Admin@ordererorg0:ordererorg0password@10.0.1.100:7054 -H /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/
 ```
 
 - 디지털 인증서/개인키 이름 변경(admin@ordererorg0 노드에서 실행)
 ```
-# mv /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/cacerts/ca.crt
-# mv /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/keystore/개인키 /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/keystore/server.key
+# mv /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/msp/cacerts/ca.crt
+# mv /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/msp/keystore/개인키 /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/msp/keystore/server.key
 ```
 
 - admincerts 디렉터리 생성 후 공개키 파일 복사(admin@org0 노드에서 실행)
@@ -457,12 +457,251 @@ id:
 
 - admincerts 디렉터리 생성 후 공개키 파일 복사(admin@ordererorg0 노드에서 실행)
 ```
-# mkdir -p /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/admincerts
-# cp /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/signcerts/cert.pem /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/admincerts/Admin@ordererorg0-cert.pem
+# mkdir -p /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/msp/admincerts
+# cp /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/msp/signcerts/cert.pem /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/msp/admincerts/Admin@ordererorg0-cert.pem
+```
+
+## Peer 및 Orerer 노드 MSP 생성
+
+- peer 계정 생성을 위해 org0 운영자 노드의 fabric-ca-client-config.yaml 수정(admin@org0 노드에서 실행)
+```
+# gedit /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/fabric-ca-client-config.yaml
+
+```
+
+```
+id:
+  name: peer0
+  type: peer
+  affiliation: org0
+  maxenrollments: 0
+  attributes:
+    - name: role
+      value: peer
+      ecert: true
+```
+
+- peer0 계정 생성(admin@org0 노드에서 실행)
+```
+# fabric-ca-client register --id.secret=peer0password -H /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/
 ```
 
 
+- peer 계정 생성을 위해 org1 운영자 노드의 fabric-ca-client-config.yaml 수정(admin@org1 노드에서 실행)
+```
+# gedit /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/fabric-ca-client-config.yaml
+
+```
+
+```
+id:
+  name: peer2
+  type: peer
+  affiliation: org1
+  maxenrollments: 0
+  attributes:
+    - name: role
+      value: peer
+      ecert: true
+```
+
+- peer2 계정 생성(admin@org1 노드에서 실행)
+```
+# fabric-ca-client register --id.secret=peer2password -H /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/
+```
+
+- orderer 계정 생성을 위해 ordererorg0 운영자 노드의 fabric-ca-client-config.yaml 수정(admin@ordererorg0 노드에서 실행)
+```
+# gedit /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/fabric-ca-client-config.yaml
+
+```
+
+```
+id:
+  name: orderer0
+  type: orderer
+  affiliation: ordererorg0
+  maxenrollments: 0
+  attributes:
+    - name: role
+      value: orderer
+      ecert: true
+```
+
+- orderer0 계정 생성(admin@ordererorg0 노드에서 실행)
+```
+# fabric-ca-client register --id.secret=orderer0password -H /root/testnet/crypto-config/ordererOrganizations/ordererorg0/users/Admin@ordererorg0/
+```
+
+- peer0 MSP 생성(peer0 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org/
+# fabric-ca-client enroll -u http://peer0:peer0password@10.0.1.100:7054 -H /root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org/
+# mv /root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org/msp/cacerts/ca.crt
+# mv /root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org/msp/keystore/개인키 /root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org/msp/keystore/server.key
+```
+
+- peer1 MSP 생성(peer1 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/org0/peers/peer1.org/
+# fabric-ca-client enroll -u http://peer1:peer1password@10.0.1.100:7054 -H /root/testnet/crypto-config/peerOrganizations/org0/peers/peer1.org/
+# mv /root/testnet/crypto-config/peerOrganizations/org0/peers/peer1.org/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/org0/peers/peer1.org/msp/cacerts/ca.crt
+# mv /root/testnet/crypto-config/peerOrganizations/org0/peers/peer1.org/msp/keystore/개인키 /root/testnet/crypto-config/peerOrganizations/org0/peers/peer1.org/msp/keystore/server.key
+```
+
+- peer2 MSP 생성(peer2 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/org0/peers/peer2.org/
+# fabric-ca-client enroll -u http://peer2:peer2password@10.0.1.100:7054 -H /root/testnet/crypto-config/peerOrganizations/org0/peers/peer2.org/
+# mv /root/testnet/crypto-config/peerOrganizations/org0/peers/peer2.org/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/org0/peers/peer2.org/msp/cacerts/ca.crt
+# mv /root/testnet/crypto-config/peerOrganizations/org0/peers/peer2.org/msp/keystore/개인키 /root/testnet/crypto-config/peerOrganizations/org0/peers/peer2.org/msp/keystore/server.key
+```
+
+- peer3 MSP 생성(peer3 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/org0/peers/peer3.org/
+# fabric-ca-client enroll -u http://peer3:peer3password@10.0.1.100:7054 -H /root/testnet/crypto-config/peerOrganizations/org0/peers/peer3.org/
+# mv /root/testnet/crypto-config/peerOrganizations/org0/peers/peer3.org/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/org0/peers/peer3.org/msp/cacerts/ca.crt
+# mv /root/testnet/crypto-config/peerOrganizations/org0/peers/peer3.org/msp/keystore/개인키 /root/testnet/crypto-config/peerOrganizations/org0/peers/peer3.org/msp/keystore/server.key
+```
+
+- orderer0 MSP 생성(orderer0 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/ordererOrganizations/org0/orderers/orderer0.org/
+# fabric-ca-client enroll -u http://orderer0:orderer0password@10.0.1.100:7054 -H /root/testnet/crypto-config/ordererOrganizations/org0/orderers/orderer0.org/
+# mv /root/testnet/crypto-config/ordererOrganizations/org0/orderers/orderer0.org/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/ordererOrganizations/org0/orderers/orderer0.org/msp/cacerts/ca.crt
+# mv /root/testnet/crypto-config/ordererOrganizations/org0/orderers/orderer0.org/msp/keystore/개인키 /root/testnet/crypto-config/ordererOrganizations/org0/orderers/orderer0.org/msp/keystore/server.key
+```
+
+## Orderer 구동
+
+- configtx.yaml 파일생성(admin@ordererorg0 노드에서 실행)
+``` 
+# gedit /root/testnet/configtx.yaml
+```
+```
+Organizations:
+    - &OrdererOrg0
+        Name: OrdererOrg0
+        ID: OrdererOrg0MSP
+        MSPDir: crypto-config/ordererOrganizations/ordererorg0/msp/
+ 
+    - &Org0
+        Name: Org0MSP
+        ID: Org0MSP
+        MSPDir: crypto-config/peerOrganizations/org0/msp/
+        AnchorPeers:
+            - Host: peer0
+              Port: 7051
+    - &Org1
+        Name: Org1MSP
+        ID: Org1MSP
+        MSPDir: crypto-config/peerOrganizations/org1/msp/
+        AnchorPeers:
+            - Host: peer2
+              Port: 7051
+
+Orderer: &OrdererDefaults
+    OrdererType: kafka
+    Addresses:
+        - orderer0:7050
+    BatchTimeout: 1s
+    BatchSize:
+        MaxMessageCount: 30
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Kafka:
+        Brokers:
+            - kafka-zookeeper:9092
+    Organizations:
+
+Application: &ApplicationDefaults
+    Organizations:
+
+Profiles:
+
+    TwoOrgsOrdererGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg0
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+                    - *Org0
+                    - *Org1
+
+    TwoOrgsChannel:
+        Consortium: SampleConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org0
+                - *Org1
+
+```
+
+- genesis.block 파일 생성(admin@ordererorg0 노드에서 실행)
+```
+# configtxgen -profile TwoOrgsOrdererGenesis-outputBlock genesis.block
+```
 
 
+- Kafka-Zookeeper 구동
+- Kafka-Zookeeper 노드 구동에 사용할 도커파일 생성(Kafka-Zookeeper 노드에서 실행)
+'''
+# cd testnet
+# gedit docker-compose.yaml 
+'''
+
+'''
+version: '2'
+services:
+    zookeeper:
+        image: hyperledger/fabric-zookeeper
+#        restart: always
+        ports:
+            - "2181:2181"
+    kafka0:
+        image: hyperledger/fabric-kafka
+#        restart: always
+        environment:
+            - KAFKA_ADVERTISED_HOST_NAME=10.0.1.32
+            - KAFKA_ADVERTISED_PORT=9092
+            - KAFKA_BROKER_ID=0
+            - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+            - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+            - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+            - KAFKA_NUM_REPLICA_FETCHERS=1
+            - KAFKA_DEFAULT_REPLICATION_FACTOR=1
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+        ports:
+            - "9092:9092"
+        depends_on:
+            - zookeeper
+'''
+
+``` 
+# docker-compose up 
+```
+
+- orderer0 구동이 필요한 genesis.block 파일 전송(admin@orderer0 노드에서 실행)
+``` 
+# scp genesis.block login_id@orderer0:/home/fabric
+```
+
+- 전송받은 genesis.block 파일을 orderer0 구동에 필요한 위치로 이동(orderer0 노드에서 실행)
+```
+# mv /home/fabric/genesis.block /root/testnet/crypto-config/ordererOrganizations/ordererorg0/orderers/orderer0.ordererorg0/genesis.block
+```
+
+- runorderer0.sh 스크립트 생성 후 orderer0 구동(orderer0 노드에서 실행)
+```
+# cd /root/testnet/
+# gedit runOrerer0.sh
+# chmod 777 runOrderer0.sh
+# ./runOrderer0.sh
+```
 
 
+```
