@@ -67,8 +67,6 @@ _# dpkg -i docker-ce_17.06.2~ce-0~ubuntu_amd64.deb_
 
 _# docker run hello-world_
 
-![2-1.PNG]({{site.baseurl}}/2-1.PNG)
-
 
 
 - docker-compose 설치
@@ -110,7 +108,6 @@ _# make_
 
 - unit-test_1이 반복적으로 나타나게 됩니다. 이때 Ctrl + C를 눌러 unit-test_1을 강제 종료합니다.
 
-![2-2.PNG]({{site.baseurl}}/2-2.PNG)
 
 
 - 하이퍼레저 패브릭 환경변수 설정
@@ -131,7 +128,6 @@ _# source /etc/profile_
 
 _# cryptogen_
 
-![]({{site.baseurl}}//2-3.PNG)
 
 
 - 실습전 e2e_cli 테스트 실행
@@ -139,8 +135,6 @@ _# cryptogen_
 _# cd $FABRIC_HOME/examples/e2e_cli_
 
 _# ./network_setup.sh up_
-
-![2-4.PNG]({{site.baseurl}}/2-4.PNG)
 
 
 // ctrl-c 테스트종료
@@ -224,22 +218,29 @@ export PATH=$PATH:$GOPATH/src/github.com/hyperledger/fabric-ca/bin
 _# source /etc/profile_
 
 
-- fabric-ca-server 명령어 실행 화면
-
-_# fabric-ca-server_
-
-![3-1.PNG]({{site.baseurl}}/3-1.PNG)
 
 
+## Fabric-CA 서버 실행 및 Fabric-CA 서버 운영자 계정 생성
 
-- fabric-ca-client 명령어 실행 화면
+- fabric-ca 설정파일 저장 경로 설정(fabric-ca 노드에서 실행)
 
-_# fabric-ca-client_
+_# gedit /etc/profile_
 
-![3-2.PNG]({{site.baseurl}}/3-2.PNG)
+'''
+export FABRIC_CA_SERVER_HOME=/root/testnet/
+'''
 
+_# source /etc/profile_
 
+_# cd $FABRIC_CA_SERVER_HOME_ _//설정한 경로로 이동하는지 확인_
 
+- Fabric-CA 서버 구동(fabric-ca 노드에서 실행)
+- -b admin:adminpw Fabric-CA ID:PWD 지정
+- --cfg.affiliations.allowremove 조직 추가/삭제 권한
+- --cfg.identities.allowremove 사용자 추가/삭제 권한
+- -d 서버 상세로그 표시
+
+_# fabric-ca-server start -b admin:adminpw --cfg.affiliations.allowremove --cfg.identities.allowremove -d_
 
 
 
