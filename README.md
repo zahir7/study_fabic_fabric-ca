@@ -258,15 +258,13 @@ export FABRIC_CA_SERVER_CLIENT=/root/testnet/
 # fabric-ca-client affiliation list
 
 # fabric-ca-client affiliation remove --force org1
-
 # fabric-ca-client affiliation remove --force org2
 
 # fabric-ca-client affiliation add org0
+# fabric-ca-client affiliation add org1
+# fabric-ca-client affiliation add ordererorg0
+
+# fabric-ca-client affiliation list
 ```
 
-_# fabric-ca-client affiliation add org1_
 
-_# fabric-ca-client affiliation add ordererorg0_
-
-_# fabric-ca-client affiliation list_
-```
