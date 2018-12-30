@@ -162,12 +162,7 @@ export FABRIC_CFG_PATH=/root/testnet
 ```
 # gedit /etc/hosts
 ```
-// 아래내용 입력
-
 -  hosts 설정
-```
-# gedit /etc/hosts
-```
 ```
 127.0.0.1	localhost
 
@@ -267,4 +262,171 @@ export FABRIC_CA_SERVER_CLIENT=/root/testnet/
 # fabric-ca-client affiliation list
 ```
 
+### 운영자 노드에 Fabric-CA 인증서 다운로드
 
+- 인증서를 저장할 디렉터리 생성(admin@org0 노드에 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/org0/msp
+```
+- 인증서 저장(admin@org0 노드에 실행)
+```
+# fabric-ca-client getcacert -u http://10.0.1.100:7054 -M /root/testnet/crypto-config/peerOrganizations/org0/msp
+```
+
+- 인증서를 저장할 디렉터리 생성(admin@org1 노드에 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/org1/msp
+```
+- 인증서 저장(admin@org1 노드에 실행)
+```
+# fabric-ca-client getcacert -u http://10.0.1.100:7054 -M /root/testnet/crypto-config/peerOrganizations/org1/msp
+```
+
+
+- 인증서를 저장할 디렉터리 생성(admin@ordererorg0 노드에 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/ordererorg0/msp
+```
+- 인증서 저장(admin@ordererorg0 노드에 실행)
+```
+# fabric-ca-client getcacert -u http://10.0.1.100:7054 -M /root/testnet/crypto-config/peerOrganizations/ordererorg0/msp
+```
+
+- cryptogen 예제의 스크립트 재사용을 위해 인증서명 변경
+- cacerts 인증서를 이름변경(admin@org0 노드에 실행) 
+```
+# mv /root/testnet/crypto-config/peerOrganizations/org0/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/org0/msp/cacerts/ca.crt
+```
+
+- cacerts 인증서를 이름변경(admin@org1 노드에 실행) 
+```
+# mv /root/testnet/crypto-config/peerOrganizations/org1/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/org1/msp/cacerts/ca.crt
+```
+
+- cacerts 인증서를 이름변경(admin@ordererorg0 노드에 실행) 
+```
+# mv /root/testnet/crypto-config/peerOrganizations/ordererorg0/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/ordererorg0/msp/cacerts/ca.crt
+```
+
+- 조직 운영자 계정 생성을 위해 Fabric-CA 서버 운영자 노드의 fabric-ca-client-config.yaml(admin@ordererorg0 노드에 실행) 
+```
+# gedit /root/testnet/fabric-ca-client-config.yaml
+```
+
+- admin@ordererorg0의 /root/testnet/fabric-ca-client-config.yaml 파일 123~130번째 줄을 수정
+```
+id:
+  name: Admin@org0
+  type: client
+  affiliation: org0
+  maxenrollments: 0
+  attributes:
+    - name: hf.Registrar.Roles
+      value: client,orderer,peer,user
+    - name: hf.Registrar.DelegateRoles
+      value: client,orderer,peer,user
+    - name: hf.Registrar.Attributes
+      value: "*"
+    - name: hf.GenCRL
+      value: true
+    - name: hf.Revoker
+      value: true
+    - name: hf.AffiliationMgr
+      value: true
+    - name: hf.IntermediateCA
+      value: true
+    - name: role
+      value: true
+```
+
+- Admin@org0 계정 생성(admin@ordererorg0 노드에서 실행)
+```
+# fabric-ca-client register --id.secret=org0password
+```
+
+- admin@ordererorg0의 /root/testnet/fabric-ca-client-config.yaml 파일 123~130번째 줄을 수정
+```
+id:
+  name: Admin@org1
+  type: client
+  affiliation: org1
+  maxenrollments: 0
+  attributes:
+    - name: hf.Registrar.Roles
+      value: client,orderer,peer,user
+    - name: hf.Registrar.DelegateRoles
+      value: client,orderer,peer,user
+    - name: hf.Registrar.Attributes
+      value: "*"
+    - name: hf.GenCRL
+      value: true
+    - name: hf.Revoker
+      value: true
+    - name: hf.AffiliationMgr
+      value: true
+    - name: hf.IntermediateCA
+      value: true
+    - name: role
+      value: true
+```
+
+- Admin@org1 계정 생성(admin@ordererorg0 노드에서 실행)
+```
+# fabric-ca-client register --id.secret=org1password
+```
+- admin@ordererorg0의 /root/testnet/fabric-ca-client-config.yaml 파일 123~130번째 줄을 수정
+```
+id:
+  name: Admin@ordererorg0
+  type: client
+  affiliation: ordererorg0
+  maxenrollments: 0
+  attributes:
+    - name: hf.Registrar.Roles
+      value: client,orderer,peer,user
+    - name: hf.Registrar.DelegateRoles
+      value: client,orderer,peer,user
+    - name: hf.Registrar.Attributes
+      value: "*"
+    - name: hf.GenCRL
+      value: true
+    - name: hf.Revoker
+      value: true
+    - name: hf.AffiliationMgr
+      value: true
+    - name: hf.IntermediateCA
+      value: true
+    - name: role
+      value: true
+```
+
+- Admin@org1 계정 생성(admin@ordererorg0 노드에서 실행)
+```
+# fabric-ca-client register --id.secret=ordererorg0password
+```
+
+
+
+- org0 조직 운영자 MSP 생성(admin@org0 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/
+# fabric-ca-client enroll -u http://Admin@org0:org0password@10.0.1.100:7054 -H /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/
+```
+
+- 디지털 인증서/개인키 이름 변경(admin@org0 노드에서 실행)
+```
+# mv /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp/cacerts/ca.crt
+# mv /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp/keystore/개인키 /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp/keystore/server.key
+```
+
+- org1 조직 운영자 MSP 생성(admin@org1 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/
+# fabric-ca-client enroll -u http://Admin@org1:org1password@10.0.1.100:7054 -H /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/
+```
+
+- 디지털 인증서/개인키 이름 변경(admin@org1 노드에서 실행)
+```
+# mv /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/cacerts/ca.crt
+# mv /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/keystore/개인키 /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/keystore/server.key
+```
