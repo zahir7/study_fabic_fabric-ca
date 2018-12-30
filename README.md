@@ -198,16 +198,6 @@ _\# gedit /etc/hosts_
 10.0.1.13	admin@org0
 10.0.1.23	admin@org1
 10.0.1.33	admin@ordererorg0
-10.0.1.11	peer0
-10.0.1.12	peer1
-10.0.1.21	peer2
-10.0.1.22	peer3
-10.0.1.31	orderer0
-10.0.1.32	kafka-zookeeper
-10.0.1.41	client
-10.0.1.13	admin@org0
-10.0.1.23	admin@org1
-10.0.1.33	admin@ordererorg0
 ```
 
 - fabric-fa-server와 fabric-ca-client 설치
@@ -218,9 +208,21 @@ _# git clone -b release-1.3 https://github.com/hyperledger/fabric-ca_
 
 _# cd fabirc-ca_
 
-_# make fabirc-ca-server
+_# make fabirc-ca-server_
 
-_# make fabric-ca-client
+_# make fabric-ca-client_
+
+
+- Fabric-ca 환경변수 설정(루트 가상 머신에서 실행)
+
+_# gedit /etc/profile
+
+'''
+export PATH=$PATH:$GOPATH/src/github.com/hyperledger/fabric-ca/bin
+'''
+
+
+
 
 
 
