@@ -12,23 +12,23 @@
 
 - 관리자 접속
 
-_\# sudo -i_
+_# sudo -i_
 
 
 - go 다운로드
 
-_\# wget https://storage.googleapis.com/golang/go1.10.4.linux-amd64.tar.gz
+_# wget https://storage.googleapis.com/golang/go1.10.4.linux-amd64.tar.gz
 
 
 - 압축해제
 
-_\# tar -xvf go1.10.4.linux-amd64.tar.gz_
+_# tar -xvf go1.10.4.linux-amd64.tar.gz_
 
 
 - PATH 설정
 
-_\# mkdir /root/gopath_
-_\# gedit /etc/profile_
+_# mkdir /root/gopath_
+_# gedit /etc/profile_
 
 - /etc/profile  하단작성
 ```
@@ -39,12 +39,12 @@ export PATH=$PATH:$GOROOT/bin
 
 - 저장 종료 후 시스템 업데이트.
 
-_\# source /etc/profile_
+_# source /etc/profile_
 
 - 환경변수 설정확인
 
-_\# cd $GOPATH_
-_\# cd $GOROOT_
+_# cd $GOPATH_
+_# cd $GOROOT_
 
 - 기타 개발도구 설치
 ```
@@ -61,11 +61,11 @@ _\# cd $GOROOT_
 
 - 도커 다운로드 및 테스트
 
-_\# wget https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce_17.06.2~ce-0~ubuntu_amd64.deb_
+_# wget https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce_17.06.2~ce-0~ubuntu_amd64.deb_
 
-_\# dpkg -i docker-ce_17.06.2~ce-0~ubuntu_amd64.deb_
+_# dpkg -i docker-ce_17.06.2~ce-0~ubuntu_amd64.deb_
 
-_\# docker run hello-world_
+_# docker run hello-world_
 
 ![2-1.PNG]({{site.baseurl}}/2-1.PNG)
 
@@ -73,24 +73,24 @@ _\# docker run hello-world_
 
 - docker-compose 설치
 
-_\# pip install docker-compose_
+_# pip install docker-compose_
 
-_\# docker-compose --version_
+_# docker-compose --version_
 
 
 - Atom
 
-_\# add-apt-repository ppa:webupd8team/atom_
+_# add-apt-repository ppa:webupd8team/atom_
 
-_\# apt-get update_
+_# apt-get update_
 
-_\# apt-get install atom_
+_# apt-get install atom_
 
 
 - 하이퍼레저 패브릭 설치
 - 3 버전 다운로드
 
-_\# mkdir -p $GOPATH/src/github.com/hyperledger_
+_# mkdir -p $GOPATH/src/github.com/hyperledger_
 
 _# cd $GOPATH/src/github.com/hyperledger_
 
