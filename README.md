@@ -430,3 +430,39 @@ id:
 # mv /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/cacerts/ca.crt
 # mv /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/keystore/개인키 /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/keystore/server.key
 ```
+
+- ordererorg0 조직 운영자 MSP 생성(admin@ordererorg0 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/
+# fabric-ca-client enroll -u http://Admin@ordererorg0:ordererorg0password@10.0.1.100:7054 -H /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/
+```
+
+- 디지털 인증서/개인키 이름 변경(admin@ordererorg0 노드에서 실행)
+```
+# mv /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/cacerts/10-0-1-100-7054.pem /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/cacerts/ca.crt
+# mv /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/keystore/개인키 /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/keystore/server.key
+```
+
+- admincerts 디렉터리 생성 후 공개키 파일 복사(admin@org0 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp/admincerts
+# cp /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp/signcerts/cert.pem /root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp/admincerts/Admin@org0-cert.pem
+```
+
+- admincerts 디렉터리 생성 후 공개키 파일 복사(admin@org1 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/admincerts
+# cp /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/signcerts/cert.pem /root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/admincerts/Admin@org1-cert.pem
+```
+
+- admincerts 디렉터리 생성 후 공개키 파일 복사(admin@ordererorg0 노드에서 실행)
+```
+# mkdir -p /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/admincerts
+# cp /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/signcerts/cert.pem /root/testnet/crypto-config/peerOrganizations/ordererorg0/users/Admin@ordererorg0/msp/admincerts/Admin@ordererorg0-cert.pem
+```
+
+
+
+
+
+
