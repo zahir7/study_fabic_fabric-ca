@@ -17,7 +17,7 @@ _# sudo -i_
 
 - go 다운로드
 
-_# wget https://storage.googleapis.com/golang/go1.10.4.linux-amd64.tar.gz
+_# wget https://storage.googleapis.com/golang/go1.10.4.linux-amd64.tar.gz_
 
 
 - 압축해제
