@@ -226,9 +226,9 @@ _# source /etc/profile_
 
 _# gedit /etc/profile_
 
-'''
+```
 export FABRIC_CA_SERVER_HOME=/root/testnet/
-'''
+```
 
 _# source /etc/profile_
 
@@ -244,12 +244,41 @@ _# fabric-ca-server start -b admin:adminpw --cfg.affiliations.allowremove --cfg.
 
 
 
+## Fabric-CA 서버 운영자 MSP
+
+- Fabric-CA 클라이언트 설정파일 저장 경로(admin@ordererorg0 노드에서 실행)
+
+_# gedit /etc/profile_
+
+```
+export FABRIC_CA_SERVER_CLIENT=/root/testnet/
+```
+
+_# source /etc/profile_
+
+_# cd $FABRIC_CA_CLIENT_HOME_
 
 
+- Fabric-CA 운영자 권한 획득(admin@ordererorg0 노드에서 실행)
+
+_# fabric-ca-client enroll -u http://admin:adminpw@10.0.1.100:7054_
 
 
+## 조직 생성 및 조직 운영자 MSP 생성
 
+- 기본 설정 조직 확인 및 제거(admin@ordererorg0 노드에서 실행)
+```
+_# fabric-ca-client affiliation list_
 
+_# fabric-ca-client affiliation remove --force org1_
 
+_# fabric-ca-client affiliation remove --force org2_
 
+_# fabric-ca-client affiliation add org0_
 
+_# fabric-ca-client affiliation add org1_
+
+_# fabric-ca-client affiliation add ordererorg0_
+
+_# fabric-ca-client affiliation list_
+```
