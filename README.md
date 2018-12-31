@@ -1,5 +1,6 @@
 # study_fabic_fabric-ca
 
+- fabric-ca 통하여 조직 생성 및 조직 운영자 MSP 생성 , 인증 실습예제
 
 ## Virtualbox or VM Ware + Ubuntu 설치 (v18.04.1)
 
