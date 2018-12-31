@@ -987,7 +987,7 @@ peer chaincode list -C ch1 --installed
 
 ## 체인코드 인스턴스 생성
 
-
+- 체인코드 인스턴스 생성 및 확인(admin@org0 노드에서 실행)
 ```
 # gedit /root/testnet/instantiateCC.sh
 ```
@@ -997,4 +997,83 @@ export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org
 export CORE_PEER_ADDRESS=peer0:7051
 peer chaincode instantiate -o orderer0:7050 -C ch1 -n testnetCC -v 1.0 -c '{"Args":["init","a", "100", "b","200"]}' -P "OR ('Org0MSP.member','Org1MSP.member')"
 ```
+```
+# chmod 777 instantiateCC.sh
+# ./instantiateCC.sh
+```
+- peer0 노드에 설치된 체인코드를 확인하는 스크립트 생성(admin@org0 노드에서 실행)
+```
+# gedit /root/testnet/installedCClist.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org0MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp
+export CORE_PEER_ADDRESS=peer0:7051
+peer chaincode list -C ch1 --installed
+```
+```
+# chmod 777 installedCClist.sh
+# ./installedCClist.sh
+```
 
+## 분산원장의 데이터 읽기
+- org0운영자 노드에서 데이터를 읽어오는 스크립트 생성(admin@org0 노드에서 실행)
+```
+# gedit /root/testnet/query.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org0MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp
+export CORE_PEER_ADDRESS=peer0:7051
+peer chaincode query -C ch1 -n testnetCC -c '{"Args":["query","b"]}'
+```
+```
+# chmod 777 query.sh
+# ./query.sh
+```
+
+- 분산원장에 a와 b의 데이터를 변경하는 스크립트 생성(admin@org0 노드에서 실행)
+```
+# gedit /root/testnet/invoke.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org0MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp
+export CORE_PEER_ADDRESS=peer0:7051
+peer chaincode invoke -o orderer0:7050 -C ch1 -n testnetCC -c '{"Args":["invoke","a","b","20"]}'
+```
+```
+# chmod 777 invoke.sh
+# ./invoke.sh
+```
+
+
+- peer1을 통하여 분산원장 데이터를 읽어오는 스크립트 생성(admin@org1 노드에서 실행)
+```
+# gedit /root/testnet/query.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org1/msp
+export CORE_PEER_ADDRESS=peer2:7051
+peer chaincode query -C ch1 -n testnetCC -c '{"Args":["query","b"]}'
+```
+```
+# chmod 777 query.sh
+# ./query.sh
+```
+
+- 분산원장에 a와 b의 데이터를 변경하는 스크립트 생성(admin@org0 노드에서 실행)
+```
+# gedit /root/testnet/invoke.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org1/msp
+export CORE_PEER_ADDRESS=peer2:7051
+peer chaincode invoke -o orderer0:7050 -C ch1 -n testnetCC -c '{"Args":["invoke","a","b","30"]}'
+```
+```
+# chmod 777 invoke.sh
+# ./invoke.sh
+```
