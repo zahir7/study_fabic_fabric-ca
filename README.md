@@ -702,6 +702,3 @@ services:
 # chmod 777 runOrderer0.sh
 # ./runOrderer0.sh
 ```
-
-
-```
