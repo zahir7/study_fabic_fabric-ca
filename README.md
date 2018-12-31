@@ -649,12 +649,12 @@ Profiles:
 
 - Kafka-Zookeeper 구동
 - Kafka-Zookeeper 노드 구동에 사용할 도커파일 생성(Kafka-Zookeeper 노드에서 실행)
-'''
+```
 # cd testnet
 # gedit docker-compose.yaml 
-'''
+```
 
-'''
+```
 version: '2'
 services:
     zookeeper:
@@ -679,7 +679,7 @@ services:
             - "9092:9092"
         depends_on:
             - zookeeper
-'''
+```
 
 ``` 
 # docker-compose up 
