@@ -699,7 +699,289 @@ services:
 ```
 # cd /root/testnet/
 # gedit runOrerer0.sh
+```
+```
+ORDERER_GENERAL_LOGLEVEL=info \
+ORDERER_GENERAL_LISTENADDRESS=orderer0 \
+ORDERER_GENERAL_GENESISMETHOD=file \
+ORDERER_GENERAL_GENESISFILE=/root/testnet/crypto-config/ordererOrganizations/ordererorg0/orderers/orderer0.ordererorg0/genesis.block \
+ORDERER_GENERAL_LOCALMSPID=OrdererOrg0MSP \
+ORDERER_GENERAL_LOCALMSPDIR=/root/testnet/crypto-config/ordererOrganizations/ordererorg0/orderers/orderer0.ordererorg0/msp \
+ORDERER_GENERAL_TLS_ENABLED=false \
+ORDERER_GENERAL_TLS_PRIVATEKEY=/root/testnet/crypto-config/ordererOrganizations/ordererorg0/orderers/orderer0.ordererorg0/tls/server.key \
+ORDERER_GENERAL_TLS_CERTIFICATE=/root/testnet/crypto-config/ordererOrganizations/ordererorg0/orderers/orderer0.ordererorg0/tls/server.crt \
+ORDERER_GENERAL_TLS_ROOTCAS=[/root/testnet/crypto-config/ordererOrganizations/ordererorg0/orderers/orderer0.ordererorg0/tls/ca.crt,/root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org0/tls/ca.crt,/root/testnet/crypto-config/peerOrganizations/org1/peers/peer2.org1/tls/ca.crt] \
+CONFIGTX_ORDERER_BATCHTIMEOUT=1s \
+CONFIGTX_ORDERER_ORDERERTYPE=kafka \
+CONFIGTX_ORDERER_KAFKA_BROKERS=[kafka-zookeeper:9092] \
+orderer
+```
+
+```
 # chmod 777 runOrderer0.sh
 # ./runOrderer0.sh
 ```
+
+
+## Peer 구동
+
+- peer0.sh 스크립트 생성 후 peer0 구동(peer0 노드에서 실행)
+```
+# cd $FABRIC_HOME
+# gedit runPeer0.sh
+```
+```
+CORE_PEER_ENDORSER_ENABLED=true \
+CORE_PEER_PROFILE_ENABLED=true \
+CORE_PEER_ADDRESS=10.0.1.11:7051 \
+CORE_PEER_CHAINCODELISTENADDRESS=10.0.1.11:7052 \
+CORE_PEER_ID=org0-peer0 \
+CORE_PEER_LOCALMSPID=Org0MSP \
+CORE_PEER_GOSSIP_EXTERNALENDPOINT=10.0.1.11:7051 \
+CORE_PEER_GOSSIP_USELEADERELECTION=true \
+CORE_PEER_GOSSIP_ORGLEADER=false \
+CORE_PEER_TLS_ENABLED=false \
+CORE_PEER_TLS_KEY_FILE=/root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org0/tls/server.key \
+CORE_PEER_TLS_CERT_FILE=/root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org0/tls/server.crt \
+CORE_PEER_TLS_ROOTCERT_FILE=/root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org0/tls/ca.crt \
+CORE_PEER_TLS_SERVERHOSTOVERRIDE=10.0.1.11 \
+CORE_VM_DOCKER_ATTACHSTDOUT=true \
+CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org0/msp \
+peer node start
+```
+
+CORE_PEER_ENDORSER_ENABLED : peer의 Endorsing peer 역할 여부를 결정합니다.
+CORE_PEER_ADDRESS : peer의 주소값입니다.
+CORE_PEER_CHAINCODELISTENADDRESS : 체인코드 관련 정보를 받기 위한 주소값입니다.
+CORE_PEER_ID : peer를 식별하는 ID입니다.
+CORE_PEER_LOCALMSPID : peer의 Local MSP ID 입니다.
+CORE_PEER_GOSSIP_EXTERNALENDPOINT : 외부 조직과 통신을 위해 광고하는 주소값입니다.
+CORE_PEER_GOSSIP_USELEADERELECTION : Gossip 프로토콜의 리더 선출 방법을 수동 혹은 자동으로 설정하는 값입니다.
+CORE_PEER_GOSSIP_ORGLEADER : 프로토콜 리더를 수동으로 했을시 해당  peer를 리더로 설정할지 여부를 정하는 값입니다. (CORE_PEER_GOSSIP_USELEADERELECTION 값이  true이면 fasle로 설정)
+
+CORE_PEER_TLS_ENABLED : TLS 통신 활성화 여부 설정합니다.
+CORE_PEER_TLS_KEY_FILE :  peer 개인키 저장된 경로
+CORE_PEER_TLS_CERT_FILE : peer의 디지털 인증서 파일이 저장된 경로입니다.
+CORE_PEER_TLS_ROOTCERT_FILE : CA의 디지털 인증서 파일이 저장된 경로입니다.
+CORE_PEER_TLS_SERVERHOSTOVERRIDE : TLS 인증서의 CN(Common Name) 입니다. 인증서가 저장된 디렉터리에서 'openssl x509 -in 인증서이름 -text -noout' 명령어를 이용해 CN을 확인할 수 있습니다.
+CORE_PEER_MSPCONFIGPATH : peer의  MSP가 저장되어 있는 경로입니다.
+
+
+- runPeer0.sh 권한 변경 후 실행(peer0 노드에서 실행)
+```
+root@peer0:~# chmod 777 runPeer0.sh
+root@peer0:~# ./runPeer0.sh
+``` 
+
+** 동일한 작업방법으로 peer1~3 구동 시켜준다 
+
+
+
+## 채널 생성
+
+- ch.tx 생성 후 admin@org0 노드로 전송(admin@ordererorg0 노드에서 실행)
+```
+# configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ch1.tx -channelID ch1
+# scp ch1.tx login_id@10.0.1.13:/home/fabric
+```
+
+- 채널 생성(admin@org0 노드에서 실행)
+```
+# mv /home/fabric/ch1.tx /root/testnet/
+# gedit create-channel.sh
+```
+```
+CORE_PEER_LOCALMSPID="Org0MSP" \
+CORE_PEER_TLS_ROOTCERT_FILE=/root/testnet/crypto-config/peerOrganizations/org0/peers/peer0.org0/tls/ca.crt \
+CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp \
+CORE_PEER_ADDRESS=peer0:7051 \
+peer channel create -o orderer0:7050 -c ch1 -f ch1.tx
+```
+```
+# chmod 777 create-channel.sh
+# ./create-channel.sh
+# scp ch1.block fabric@10.0.1.23:/home/fabric
+```
+
+
+## Peer의 채널 참여
+
+- peer0~1를 채널에 참여시키는 스크립트(admin@org0 노드에서 실행)
+```
+# gedit /root/testnet/peer0-join.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org0MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp
+export CORE_PEER_ADDRESS=peer0:7051
+peer channel join -b ch1.block
+```
+```
+# gedit /root/testnet/peer1-join.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org0MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp
+export CORE_PEER_ADDRESS=peer1:7051
+peer channel join -b ch1.block
+```
+```
+# chmod 777 peer0-join.sh
+# ./peer0-join.sh
+# chmod 777 peer1-join.sh
+# ./peer1-join.sh
+```
+- peer2~3을 채널에 참여시키는 스크립트(admin@org1 노드에서 실행)
+```
+# gedit /root/testnet/peer2-join.sh 
+```
+```
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp
+export CORE_PEER_ADDRESS=peer2:7051
+peer channel join -b ch1.block
+```
+```
+# gedit /root/testnet/peer3-join.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp
+export CORE_PEER_ADDRESS=peer3:7051
+peer channel join -b ch1.block
+```
+```
+# chmod 777 peer2-join.sh
+# ./peer2-join.sh
+# chmod 777 peer3-join.sh
+# ./peer3-join.sh
+```
+
+## Anchor peer 업데이트
+
+- Anchor peer 업데이트 트랜잭션 생성(admin@ordererorg0 노드에서 실행)
+```
+# configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate Org0MSPanchors.tx -channelID ch1 -asOrg Org0MSP
+# configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate Org1MSPanchors.tx -channelID ch1 -asOrg Org1MSP
+# scp Org0MSPanchors.tx login_id@10.0.1.13:/home/fabric
+# scp Org1MSPanchors.tx login_id@10.0.1.23:/home/fabric
+```
+
+- Org0 Anchor peer 업데이트(admin@org0 노드에서 실행)
+```
+# mv /home/fabric/Org0MSPanchors.tx /root/testnet
+# gedit org0-anchor.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org0MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp
+export CORE_PEER_ADDRESS=peer0:7051
+peer channel create -o orderer0:7050 -c ch1 -f Org0MSPanchors.tx
+```
+```
+# chmod 777 org0-anchor.sh
+# ./org0-anchor.sh
+```
+
+- Org1 Anchor peer 업데이트(admin@org1 노드에서 실행)
+```
+# mv /home/fabric/Org1MSPanchors.tx /root/testnet
+# gedit org1-anchor.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp
+export CORE_PEER_ADDRESS=peer2:7051
+peer channel create -o orderer0:7050 -c ch1 -f Org1MSPanchors.tx
+```
+```
+# chmod 777 org1-anchor.sh
+# ./org1-anchor.sh
+```
+
+
+## 체인코드 설치
+
+- peer0~1 노드에 체인코드 설치 및 확인(admin@org0 노드에서 실행)
+```
+# gedit /root/testnet/installCCpeer0.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org0MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp
+export CORE_PEER_ADDRESS=peer0:7051
+peer chaincode install -n testnetCC -v 1.0 -p github.com/hyperledger/fabric/examples/chaincode/go/example02/cmd
+```
+```
+# chmod 777 installCCpeer0.sh
+# ./installCCpeer0.sh
+```
+```
+# gedit /root/testnet/installCCpeer1.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org0MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp
+export CORE_PEER_ADDRESS=peer1:7051
+peer chaincode install -n testnetCC -v 1.0 -p github.com/hyperledger/fabric/examples/chaincode/go/example02/cmd
+```
+```
+# chmod 777 installCCpeer1.sh
+# ./installCCpeer1.sh
+```
+```
+# gedit /root/testnet/installedCClist.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org0MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp
+export CORE_PEER_ADDRESS=peer0:7051
+peer chaincode list -C ch1 --installed
+```
+```
+# chmod 777 installedCClist.sh
+# ./installedCClist.sh
+```
+
+- peer2~3 노드에 체인코드 설치 및 확인(admin@org1 노드에서 실행)
+```
+# gedit /root/testnet/installCCpeer2.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp
+export CORE_PEER_ADDRESS=peer2:7051
+peer chaincode install -n testnetCC -v 1.0 -p github.com/hyperledger/fabric/examples/chaincode/go/example02/cmd
+```
+```
+# chmod 777 installCCpeer2.sh
+# ./installCCpeer2.sh
+```
+```
+# gedit /root/testnet/installCCpeer3.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org1/users/Admin@org1/msp
+export CORE_PEER_ADDRESS=peer3:7051
+peer chaincode install -n testnetCC -v 1.0 -p github.com/hyperledger/fabric/examples/chaincode/go/example02/cmd
+```
+```
+# chmod 777 installCCpeer3.sh
+# ./installCCpeer3.sh
+```
+```
+# gedit /root/testnet/installedCClist.sh
+```
+```
+export CORE_PEER_LOCALMSPID="Org0MSP"
+export CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/users/Admin@org0/msp
+export CORE_PEER_ADDRESS=peer0:7051
+peer chaincode list -C ch1 --installed
+```
+```
+# chmod 777 installedCClist.sh
+# ./installedCClist.sh
+```
+
 
