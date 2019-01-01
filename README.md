@@ -751,7 +751,7 @@ CORE_PEER_MSPCONFIGPATH=/root/testnet/crypto-config/peerOrganizations/org0/peers
 peer node start
 ```
 
-CORE_PEER_ENDORSER_ENABLED : peer의 Endorsing peer 역할 여부를 결정합니다.
+CORE_PEER_ENDORSER_ENABLED : peer의 Endorsing peer 역할 여부를 결정합니다.<br/>
 CORE_PEER_ADDRESS : peer의 주소값입니다.
 CORE_PEER_CHAINCODELISTENADDRESS : 체인코드 관련 정보를 받기 위한 주소값입니다.
 CORE_PEER_ID : peer를 식별하는 ID입니다.
